@@ -4,47 +4,56 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
   <meta name="theme-color" content="#06121d">
-  <title>SKYFIRE · VERIFIED R4</title>
+  <title>SKYFIRE · AUDIO R5</title>
   <style>
-    *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;background:#02070c;color:#e9fbff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 22%,rgba(34,154,188,.25),transparent 42%),linear-gradient(#071722,#02070c)}main{width:min(100%,420px);padding:34px 27px;text-align:center;border:1px solid rgba(112,231,255,.28);border-radius:18px;background:rgba(5,22,33,.88);box-shadow:0 26px 70px rgba(0,0,0,.55),0 0 36px rgba(68,222,255,.08) inset}h1{margin:0;font:italic 900 40px/1 Impact,"Arial Narrow",sans-serif;letter-spacing:.08em}p{margin:18px 0 0;color:#9fc7d0;line-height:1.65;font-size:14px}.bar{height:3px;margin:25px auto 0;overflow:hidden;background:rgba(255,255,255,.1);border-radius:9px}.bar i{display:block;width:42%;height:100%;background:#66ebff;box-shadow:0 0 12px #66ebff;animation:load 1.1s ease-in-out infinite alternate}@keyframes load{from{transform:translateX(-100%)}to{transform:translateX(240%)}}code{display:block;margin-top:17px;color:#6e9ba7;font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}.error{color:#ff8fa4}.error~.bar{display:none}
+    *{box-sizing:border-box;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;overscroll-behavior:none;background:#02070c;color:#e9fbff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    body{position:fixed;inset:0;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 22%,rgba(34,154,188,.25),transparent 42%),linear-gradient(#071722,#02070c)}
+    main{width:min(100%,420px);padding:34px 27px;text-align:center;border:1px solid rgba(112,231,255,.28);border-radius:18px;background:rgba(5,22,33,.88);box-shadow:0 26px 70px rgba(0,0,0,.55),0 0 36px rgba(68,222,255,.08) inset}
+    h1{margin:0;font:italic 900 40px/1 Impact,"Arial Narrow",sans-serif;letter-spacing:.08em}
+    p{margin:18px 0 0;color:#9fc7d0;line-height:1.65;font-size:14px}
+    .bar{height:3px;margin:25px auto 0;overflow:hidden;background:rgba(255,255,255,.1);border-radius:9px}
+    .bar i{display:block;width:42%;height:100%;background:#66ebff;box-shadow:0 0 12px #66ebff;animation:load 1.1s ease-in-out infinite alternate}
+    @keyframes load{from{transform:translateX(-100%)}to{transform:translateX(240%)}}
+    code{display:block;margin-top:17px;color:#6e9ba7;font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+    .error{color:#ff8fa4}.error~.bar{display:none}
   </style>
 </head>
 <body>
   <main>
     <h1>SKYFIRE</h1>
-    <p id="status">正在下载并校验战机系统……</p>
+    <p id="status">正在装载音频增强战机系统……</p>
     <div class="bar"><i></i></div>
-    <code>VERIFIED BUILD · R4 · 2026-07-19</code>
+    <code>AUDIO BUILD · R5 · 2026-07-19</code>
   </main>
   <script>
   (function () {
     "use strict";
     var status = document.getElementById("status");
     var paths = [
-      "./r4/part-00.b64",
-      "./r4/part-01.b64",
-      "./r4/part-02.b64",
-      "./r4/part-03.b64"
+       "./r5/part-00.b64",
+       "./r5/part-01.b64",
+       "./r5/part-02.b64",
+       "./r5/part-03.b64",
+       "./r5/part-04.b64"
     ];
-    var expectedLengths = [8000, 8000, 8000, 7512];
-    var expectedGzipBytes = 23634;
-    var expectedGzipSha256 = "c5d785bf44bbf532bf1bb5fb39bf9aae45fdae81fa27205d37b50aa9f4e777da";
-    var expectedHtmlChars = 77816;
-    var expectedBuildMarker = 'window.__skyfireBuild="2026-07-19-r3"';
+    var expectedLengths = [8000, 8000, 8000, 8000, 2648];
+    var expectedGzipBytes = 25984;
+    var expectedGzipSha256 = "095a6aff982c15a572bfde501119fc9762c19cdd1e3345f7a0f7256bd01d5a89";
+    var expectedHtmlChars = 86369;
+    var expectedBuildMarker = 'window.__skyfireBuild="2026-07-19-r5"';
 
     function fail(error) {
       var message = error && error.message ? error.message : String(error || "未知错误");
       status.className = "error";
       status.textContent = "启动失败：" + message;
-      console.error("[SKYFIRE VERIFIED R4]", error);
+      console.error("[SKYFIRE AUDIO R5]", error);
     }
-
     function toHex(buffer) {
       return Array.prototype.map.call(new Uint8Array(buffer), function (value) {
         return value.toString(16).padStart(2, "0");
       }).join("");
     }
-
     async function fetchPart(path, index) {
       var response = await fetch(path, { cache: "no-store", credentials: "same-origin" });
       if (!response.ok) throw new Error("源码分片 " + (index + 1) + " 请求失败（HTTP " + response.status + "）");
@@ -53,37 +62,24 @@
       if (!/^[A-Za-z0-9+/=]+$/.test(text)) throw new Error("源码分片 " + (index + 1) + " 编码非法");
       return text;
     }
-
     async function boot() {
-      if (typeof DecompressionStream !== "function") {
-        throw new Error("当前浏览器缺少 gzip 解压能力；需要 iOS 16.4 或更高版本的 Safari");
-      }
-
+      if (typeof DecompressionStream !== "function") throw new Error("当前浏览器版本过低；需要 iOS 16.4 或更高版本");
       var parts = await Promise.all(paths.map(fetchPart));
-      status.textContent = "分片完整，正在执行密码学校验……";
-
+      status.textContent = "分片完整，正在校验 BGM 构建……";
       var binary = atob(parts.join(""));
       var gzipBytes = new Uint8Array(binary.length);
       for (var i = 0; i < binary.length; i += 1) gzipBytes[i] = binary.charCodeAt(i);
       if (gzipBytes.length !== expectedGzipBytes) throw new Error("压缩载荷长度校验失败");
-
       if (window.crypto && window.crypto.subtle) {
         var digest = await window.crypto.subtle.digest("SHA-256", gzipBytes);
         if (toHex(digest) !== expectedGzipSha256) throw new Error("压缩载荷 SHA-256 校验失败");
       }
-
-      status.textContent = "校验通过，正在解压并启动……";
+      status.textContent = "校验通过，正在启动……";
       var stream = new Blob([gzipBytes]).stream().pipeThrough(new DecompressionStream("gzip"));
       var html = await new Response(stream).text();
-      if (html.length !== expectedHtmlChars || html.indexOf(expectedBuildMarker) < 0) {
-        throw new Error("游戏源码签名校验失败");
-      }
-
-      document.open();
-      document.write(html);
-      document.close();
+      if (html.length !== expectedHtmlChars || html.indexOf(expectedBuildMarker) < 0) throw new Error("游戏源码签名校验失败");
+      document.open();document.write(html);document.close();
     }
-
     boot().catch(fail);
   }());
   </script>
