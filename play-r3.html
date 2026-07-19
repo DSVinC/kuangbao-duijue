@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#06121d">
+  <title>SKYFIRE · Verified Launcher R3</title>
+  <style>
+    *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;background:#02070c;color:#e9fbff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 22%,rgba(34,154,188,.25),transparent 42%),linear-gradient(#071722,#02070c)}main{width:min(100%,420px);padding:32px 26px;text-align:center;border:1px solid rgba(112,231,255,.28);border-radius:18px;background:rgba(5,22,33,.86);box-shadow:0 26px 70px rgba(0,0,0,.55),0 0 36px rgba(68,222,255,.08) inset}h1{margin:0;font-size:34px;letter-spacing:.08em}p{margin:18px 0 0;color:#9fc7d0;line-height:1.65;font-size:14px}.bar{height:3px;margin:25px auto 0;overflow:hidden;background:rgba(255,255,255,.1);border-radius:9px}.bar i{display:block;width:42%;height:100%;background:#66ebff;box-shadow:0 0 12px #66ebff;animation:load 1.1s ease-in-out infinite alternate}@keyframes load{from{transform:translateX(-100%)}to{transform:translateX(240%)}}code{display:block;margin-top:17px;color:#6e9ba7;font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all}.error{color:#ff8fa4}.error+.bar{display:none}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>SKYFIRE</h1>
+    <p id="status">正在校验并装载战机系统……</p>
+    <div class="bar"><i></i></div>
+    <code>VERIFIED LAUNCHER · R3 · 2026-07-19</code>
+  </main>
+  <script>
+  (function () {
+    'use strict';
+    var status = document.getElementById('status');
+    var sourcePath = './index.html?source=7611d7b40ebc69802a606aec933a96ced8ae20da';
+    var broken = "e.fire=e.type==='carrier'?.48:e.type==='bomber':1.2:rnd(1.4,2.4)";
+    var repaired = "e.fire=e.type==='carrier'?.48:e.type==='bomber'?1.2:rnd(1.4,2.4)";
+    var unsafeStorage = "this.high=+(localStorage.getItem('skyfireHigh')||0);";
+    var safeStorage = "this.high=(()=>{try{return +(localStorage.getItem('skyfireHigh')||0)}catch(e){return 0}})();";
+
+    function fail(error) {
+      var message = error && error.message ? error.message : String(error || '未知错误');
+      status.className = 'error';
+      status.textContent = '启动入口校验失败：' + message;
+      console.error('[SKYFIRE R3]', error);
+    }
+
+    fetch(sourcePath, { cache: 'no-store', credentials: 'same-origin' })
+      .then(function (response) {
+        if (!response.ok) throw new Error('源码请求失败（HTTP ' + response.status + '）');
+        return response.text();
+      })
+      .then(function (source) {
+        var matches = source.split(broken).length - 1;
+        if (matches !== 1) throw new Error('源码签名不匹配，拒绝运行未经验证的版本');
+
+        source = source.replace(broken, repaired);
+        if (source.indexOf(unsafeStorage) !== -1) source = source.replace(unsafeStorage, safeStorage);
+        source = source.replace('</head>', '<meta name="skyfire-build" content="verified-r3-2026-07-19"></head>');
+        source = source.replace('</body>', '<script>window.__skyfirePublicBuild="verified-r3-2026-07-19";<\/script></body>');
+
+        status.textContent = '校验通过，正在启动……';
+        document.open();
+        document.write(source);
+        document.close();
+      })
+      .catch(fail);
+  }());
+  </script>
+</body>
+</html>
