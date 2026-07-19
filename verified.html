@@ -56,8 +56,7 @@
 
     async function boot() {
       if (typeof DecompressionStream !== "function") {
-        location.replace("./play-r3.html");
-        return;
+        throw new Error("当前浏览器缺少 gzip 解压能力；需要 iOS 16.4 或更高版本的 Safari");
       }
 
       var parts = await Promise.all(paths.map(fetchPart));
