@@ -1,0 +1,126 @@
+name: Repair and smoke-test SKYFIRE
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/repair-and-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Repair the startup-blocking syntax error
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          source = path.read_text(encoding='utf-8')
+          broken = "e.fire=e.type==='carrier'?.48:e.type==='bomber':1.2:rnd(1.4,2.4)"
+          fixed = "e.fire=e.type==='carrier'?.48:e.type==='bomber'?1.2:rnd(1.4,2.4)"
+          if broken not in source:
+              raise SystemExit('Expected broken expression was not found; refusing an unverified edit.')
+          source = source.replace(broken, fixed, 1)
+          path.write_text(source, encoding='utf-8')
+          print('Repaired nested ternary expression.')
+          PY
+
+      - name: Extract and syntax-check inline JavaScript
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          html = Path('index.html').read_text(encoding='utf-8')
+          scripts = re.findall(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>', html, flags=re.I)
+          if not scripts:
+              raise SystemExit('No inline JavaScript found.')
+          Path('/tmp/skyfire.js').write_text('\n'.join(scripts), encoding='utf-8')
+          PY
+          node --check /tmp/skyfire.js
+
+      - name: Install browser test driver
+        shell: bash
+        run: npm install --no-save --no-package-lock puppeteer-core@24
+
+      - name: Run real Chrome mobile startup test
+        shell: bash
+        run: |
+          CHROME_BIN="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME_BIN"
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/skyfire-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+          sleep 1
+          CHROME_BIN="$CHROME_BIN" node <<'JS'
+          const puppeteer = require('puppeteer-core');
+
+          (async () => {
+            const browser = await puppeteer.launch({
+              headless: true,
+              executablePath: process.env.CHROME_BIN,
+              args: ['--no-sandbox', '--disable-dev-shm-usage']
+            });
+            const page = await browser.newPage();
+            await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+
+            const errors = [];
+            page.on('pageerror', error => errors.push(String(error)));
+            page.on('console', message => {
+              if (message.type() === 'error') errors.push(message.text());
+            });
+
+            await page.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle0' });
+            await page.waitForSelector('#start-btn', { visible: true });
+            await page.tap('#start-btn');
+            await new Promise(resolve => setTimeout(resolve, 1200));
+
+            const result = await page.evaluate(() => ({
+              state: window.__skyfire && window.__skyfire.state,
+              menuHidden: document.querySelector('#menu').classList.contains('hidden'),
+              hudVisible: document.querySelector('#hud').classList.contains('visible'),
+              stageTime: window.__skyfire && window.__skyfire.stageTime,
+              bullets: window.__skyfire && window.__skyfire.bullets.length
+            }));
+
+            await page.screenshot({ path: 'skyfire-started.png', fullPage: false });
+            await browser.close();
+
+            console.log(JSON.stringify({ result, errors }, null, 2));
+            if (errors.length || result.state !== 'playing' || !result.menuHidden || !result.hudVisible || !(result.stageTime > 0.5) || !(result.bullets > 0)) {
+              process.exit(1);
+            }
+          })().catch(error => {
+            console.error(error);
+            process.exit(1);
+          });
+          JS
+
+      - name: Upload browser evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: skyfire-browser-smoke
+          path: skyfire-started.png
+
+      - name: Commit the verified repair
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No repair to commit.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Fix SKYFIRE startup and verify in Chrome'
+          git push
