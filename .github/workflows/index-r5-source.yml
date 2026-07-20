@@ -1,0 +1,56 @@
+name: Index R5 Source
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/index-r5-source.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build source index
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('src/r5-source.pretty.html')
+          lines = p.read_text(encoding='utf-8').splitlines()
+          patterns = [
+              'const game', 'let game', 'class Game', 'function startGame',
+              'startGame(', 'spawnBoss', 'createBoss', 'boss =', 'boss:',
+              'weapon', 'firePlayer', 'playerFire', 'shoot', 'pointerdown',
+              'pointermove', 'mapPointer', 'input.pointer', 'collectPickup',
+              'nextStage', 'stageClear', 'drawBoss', 'updateBoss',
+              'window.__skyfire', 'window.__skyfireBuild', 'const audio',
+          ]
+          out=[]
+          for pat in patterns:
+              out.append(f'## {pat}')
+              hits=0
+              for i,line in enumerate(lines,1):
+                  if pat in line:
+                      out.append(f'{i}: {line[:500]}')
+                      hits += 1
+                      if hits >= 30:
+                          break
+              if not hits:
+                  out.append('(no hits)')
+          Path('src/r5-index.txt').write_text('\n'.join(out)+'\n', encoding='utf-8')
+          PY
+      - name: Commit index
+        run: |
+          git config user.name 'skyfire-build-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add src/r5-index.txt
+          if git diff --cached --quiet; then
+            echo 'No index changes'
+          else
+            git commit -m 'Index R5 gameplay source [skip ci]'
+            git push
+          fi
