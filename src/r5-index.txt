@@ -1,0 +1,116 @@
+## const game
+2202:         const game = {
+## let game
+(no hits)
+## class Game
+(no hits)
+## function startGame
+4502:         function startGame(ev) {
+## startGame(
+2054:               startGame();
+4502:         function startGame(ev) {
+4558:           startGame();
+## spawnBoss
+2471:                 this.spawnBoss();
+2661:           spawnBoss() {
+## createBoss
+(no hits)
+## boss =
+1690:           musicLead(midi, when, boss = false) {
+1707:           musicChord(root, quality, when, boss = false) {
+1781:             const boss = !!(typeof game !== "undefined" && game.boss);
+2312:             this.boss = null;
+2344:             this.boss = null;
+2663:             this.boss = {
+3149:                 this.boss = null;
+## boss:
+2216:           boss: null,
+## weapon
+320:       .weapon-line {
+327:       #weapon-name {
+1052:               <div class="weapon-line">
+1054:                 ><strong id="weapon-name">R-VULCAN</strong>
+1218:           weapon: $("weapon-name"),
+1570:           shoot(weapon) {
+1574:             if (weapon === "laser") {
+2289:               weapon: "spread",
+2734:             if (p.weapon === "spread") {
+2787:                 type: p.weapon,
+2801:                 p.weapon === "spread" ? "#ff6a77" : "#62edff",
+2805:             audio.shoot(p.weapon);
+3077:               pl.weapon = "spread";
+3080:               pl.weapon = "laser";
+3601:             ui.weapon.textContent =
+3602:               p.weapon === "spread" ? "R-VULCAN" : "B-PIERCE";
+3603:             ui.weapon.style.color =
+3604:               p.weapon === "spread" ? "#ff6a85" : "#6beeff";
+3605:             ui.pipsWrap.classList.toggle("red", p.weapon === "spread");
+3804:             ctx.fillStyle = p.weapon === "spread" ? "#ff4668" : "#3ce0ff";
+3890:                   p.weapon === "spread"
+3905:                 ctx.fillStyle = p.weapon === "spread" ? "#ff4e70" : "#43e4ff";
+## firePlayer
+2729:               this.firePlayer();
+2731:           firePlayer() {
+## playerFire
+(no hits)
+## shoot
+1570:           shoot(weapon) {
+2805:             audio.shoot(p.weapon);
+## pointerdown
+1967:           shell.addEventListener("pointerdown", () => audio.unlock(), {
+1996:           "pointerdown",
+4538:         $("bomb-btn").addEventListener("pointerdown", (ev) => {
+## pointermove
+2008:           "pointermove",
+## mapPointer
+1989:         function mapPointer(ev) {
+1999:             mapPointer(ev);
+2011:             mapPointer(ev);
+## input.pointer
+1993:           input.pointerType = ev.pointerType || "mouse";
+2000:             input.pointer = true;
+2010:             if (input.pointer) ev.preventDefault();
+2012:             if (ev.pointerType === "mouse") input.pointer = true;
+2020:             if (ev.pointerType !== "mouse") input.pointer = false;
+2031:             input.pointer = false;
+2701:             if (input.pointer && this.state === "playing") {
+2702:               const k = input.pointerType === "touch" ? 15 : 10;
+## collectPickup
+3069:           collectPickup(p, index) {
+3363:               if (dx * dx + dy * dy < rr * rr) this.collectPickup(item, i);
+## nextStage
+2394:           nextStage() {
+2476:               if (this.stageClearTimer <= 0) this.nextStage();
+## stageClear
+2219:           stageClearTimer: 0,
+2315:             this.stageClearTimer = 0;
+2401:             this.stageClearTimer = 0;
+2460:             if (!this.boss && !this.bossQueued && this.stageClearTimer <= 0) {
+2474:             if (this.stageClearTimer > 0) {
+2475:               this.stageClearTimer -= dt;
+2476:               if (this.stageClearTimer <= 0) this.nextStage();
+2728:             if (p.fireTimer <= 0 && this.stageClearTimer <= 0)
+3153:                 this.stageClearTimer = 4.1;
+## drawBoss
+3647:               if (this.boss) this.drawBoss(this.boss);
+4136:           drawBoss(b) {
+## updateBoss
+2483:             if (this.boss) this.updateBoss(dt);
+3127:           updateBoss(dt) {
+## window.__skyfire
+1163:         window.__skyfireBuild = "2026-07-19-r5";
+1164:         window.__skyfireStartRequested = false;
+1170:           if (window.__skyfire && window.__skyfire.state) {
+1173:           window.__skyfireStartRequested = true;
+1183:             if (!window.__skyfire) {
+1194:           if (!window.__skyfire) show("初始化失败。请刷新页面重试。");
+1935:         window.__skyfireAudio = audio;
+4544:         window.__skyfire = game;
+4545:         window.__skyfireDimensions = () => ({ width: W, height: H });
+4555:         window.__skyfireInteractionShield = "r5";
+4556:         window.__skyfireReady = true;
+4557:         if (window.__skyfireStartRequested && game.state === "menu")
+## window.__skyfireBuild
+1163:         window.__skyfireBuild = "2026-07-19-r5";
+## const audio
+1934:         const audio = new AudioEngine();
