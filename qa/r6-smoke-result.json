@@ -1,0 +1,156 @@
+{
+  "url": "http://127.0.0.1:4173/index.html",
+  "build": {
+    "build": "2026-07-20-r6",
+    "r6": {
+      "weapons": [
+        "spread",
+        "laser",
+        "plasma",
+        "seeker",
+        "thunder",
+        "shredder"
+      ],
+      "bosses": [
+        "dreadnought",
+        "manta",
+        "hive",
+        "reaper"
+      ],
+      "movement": "relative-drag-accelerated",
+      "version": "2026-07-20-r6"
+    },
+    "state": "playing"
+  },
+  "weapons": {
+    "spread": {
+      "bullets": 7,
+      "types": [
+        "spread"
+      ],
+      "damage": 20.9
+    },
+    "laser": {
+      "bullets": 4,
+      "types": [
+        "laser"
+      ],
+      "damage": 21.3
+    },
+    "plasma": {
+      "bullets": 5,
+      "types": [
+        "plasma"
+      ],
+      "damage": 52.5
+    },
+    "seeker": {
+      "bullets": 5,
+      "types": [
+        "seeker"
+      ],
+      "damage": 33.75
+    },
+    "thunder": {
+      "bullets": 4,
+      "types": [
+        "thunder"
+      ],
+      "damage": 29.5
+    },
+    "shredder": {
+      "bullets": 6,
+      "types": [
+        "shredder"
+      ],
+      "damage": 38.800000000000004
+    }
+  },
+  "bosses": [
+    {
+      "stage": 1,
+      "kind": "dreadnought",
+      "name": "ABYSS DREADNOUGHT",
+      "phase": 1,
+      "hp": 1350
+    },
+    {
+      "stage": 2,
+      "kind": "manta",
+      "name": "TEMPEST MANTA",
+      "phase": 1,
+      "hp": 1842
+    },
+    {
+      "stage": 3,
+      "kind": "hive",
+      "name": "HIVE SOVEREIGN",
+      "phase": 1,
+      "hp": 2419
+    },
+    {
+      "stage": 4,
+      "kind": "reaper",
+      "name": "ORBITAL REAPER",
+      "phase": 1,
+      "hp": 3054
+    }
+  ],
+  "movement": {
+    "desktopTap": {
+      "before": {
+        "x": 360,
+        "y": 640
+      },
+      "after": {
+        "x": 360,
+        "y": 640
+      },
+      "distance": 0
+    },
+    "desktopDrag": {
+      "before": {
+        "x": 360,
+        "y": 640
+      },
+      "after": {
+        "x": 371.33090068882,
+        "y": 628.66909931118
+      },
+      "distance": 16.024313428031864
+    },
+    "mobileTap": {
+      "before": {
+        "x": 360,
+        "y": 640
+      },
+      "after": {
+        "x": 360,
+        "y": 640
+      },
+      "distance": 0
+    }
+  },
+  "interactionShield": {
+    "desktop": {
+      "marker": "r6-relative-drag",
+      "shellTouchAction": "none",
+      "canvasTouchAction": "none",
+      "shellUserSelect": "none",
+      "canvasUserSelect": "none"
+    },
+    "mobile": {
+      "marker": "r6-relative-drag",
+      "shellTouchAction": "none",
+      "canvasTouchAction": "none",
+      "bodyOverflow": "hidden"
+    }
+  },
+  "desktop": {
+    "state": "playing"
+  },
+  "mobile": {
+    "state": "playing"
+  },
+  "consoleErrors": []
+}

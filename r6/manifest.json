@@ -1,0 +1,32 @@
+{
+  "version": "2026-07-20-r6",
+  "source_chars": 128316,
+  "source_bytes": 128747,
+  "gzip_bytes": 35956,
+  "gzip_sha256": "d68fd1cff1a482f76ad01d271406c4ebaa2aaf4b44a6853b7577d0ada177c1b4",
+  "base64_chars": 47944,
+  "part_count": 6,
+  "part_lengths": [
+    8000,
+    8000,
+    8000,
+    8000,
+    8000,
+    7944
+  ],
+  "weapons": [
+    "spread",
+    "laser",
+    "plasma",
+    "seeker",
+    "thunder",
+    "shredder"
+  ],
+  "bosses": [
+    "dreadnought",
+    "manta",
+    "hive",
+    "reaper"
+  ],
+  "movement": "relative-drag-accelerated"
+}

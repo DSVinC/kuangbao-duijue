@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
   <meta name="theme-color" content="#06121d">
-  <title>SKYFIRE · AUDIO R5</title>
+  <title>SKYFIRE · ARSENAL R6</title>
   <style>
     *{box-sizing:border-box;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
     html,body{width:100%;height:100%;margin:0;overflow:hidden;overscroll-behavior:none;background:#02070c;color:#e9fbff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    body{position:fixed;inset:0;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 22%,rgba(34,154,188,.25),transparent 42%),linear-gradient(#071722,#02070c)}
-    main{width:min(100%,420px);padding:34px 27px;text-align:center;border:1px solid rgba(112,231,255,.28);border-radius:18px;background:rgba(5,22,33,.88);box-shadow:0 26px 70px rgba(0,0,0,.55),0 0 36px rgba(68,222,255,.08) inset}
+    body{position:fixed;inset:0;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 22%,rgba(34,154,188,.25),transparent 42%),linear-gradient(#071722,#02070c);touch-action:none}
+    main{width:min(100%,430px);padding:34px 27px;text-align:center;border:1px solid rgba(112,231,255,.28);border-radius:18px;background:rgba(5,22,33,.9);box-shadow:0 26px 70px rgba(0,0,0,.55),0 0 36px rgba(68,222,255,.08) inset}
     h1{margin:0;font:italic 900 40px/1 Impact,"Arial Narrow",sans-serif;letter-spacing:.08em}
     p{margin:18px 0 0;color:#9fc7d0;line-height:1.65;font-size:14px}
     .bar{height:3px;margin:25px auto 0;overflow:hidden;background:rgba(255,255,255,.1);border-radius:9px}
@@ -22,35 +22,33 @@
 <body>
   <main>
     <h1>SKYFIRE</h1>
-    <p id="status">正在装载音频增强战机系统……</p>
+    <p id="status">正在装载多武器与多指挥舰系统……</p>
     <div class="bar"><i></i></div>
-    <code>AUDIO BUILD · R5 · 2026-07-19</code>
+    <code>ARSENAL BUILD · R6 · 2026-07-20</code>
   </main>
   <script>
   (function () {
     "use strict";
     var status = document.getElementById("status");
     var paths = [
-       "./r5/part-00.b64",
-       "./r5/part-01.b64",
-       "./r5/part-020.b64",
-       "./r5/part-021.b64",
-       "./r5/part-022.b64",
-       "./r5/part-023.b64",
-       "./r5/part-03.b64",
-       "./r5/part-04.b64"
+        "./r6/part-00.b64",
+        "./r6/part-01.b64",
+        "./r6/part-02.b64",
+        "./r6/part-03.b64",
+        "./r6/part-04.b64",
+        "./r6/part-05.b64"
     ];
-    var expectedLengths = [8000, 8000, 2000, 2000, 2000, 2000, 8000, 2648];
-    var expectedGzipBytes = 25984;
-    var expectedGzipSha256 = "095a6aff982c15a572bfde501119fc9762c19cdd1e3345f7a0f7256bd01d5a89";
-    var expectedHtmlChars = 86369;
-    var expectedBuildMarker = 'window.__skyfireBuild="2026-07-19-r5"';
+    var expectedLengths = [8000, 8000, 8000, 8000, 8000, 7944];
+    var expectedGzipBytes = 35956;
+    var expectedGzipSha256 = "d68fd1cff1a482f76ad01d271406c4ebaa2aaf4b44a6853b7577d0ada177c1b4";
+    var expectedHtmlChars = 128316;
+    var expectedBuildMarker = 'window.__skyfireR6';
 
     function fail(error) {
       var message = error && error.message ? error.message : String(error || "未知错误");
       status.className = "error";
       status.textContent = "启动失败：" + message;
-      console.error("[SKYFIRE AUDIO R5]", error);
+      console.error("[SKYFIRE ARSENAL R6]", error);
     }
     function toHex(buffer) {
       return Array.prototype.map.call(new Uint8Array(buffer), function (value) {
@@ -68,7 +66,7 @@
     async function boot() {
       if (typeof DecompressionStream !== "function") throw new Error("当前浏览器版本过低；需要 iOS 16.4 或更高版本");
       var parts = await Promise.all(paths.map(fetchPart));
-      status.textContent = "分片完整，正在校验 BGM 构建……";
+      status.textContent = "分片完整，正在校验 R6 构建……";
       var binary = atob(parts.join(""));
       var gzipBytes = new Uint8Array(binary.length);
       for (var i = 0; i < binary.length; i += 1) gzipBytes[i] = binary.charCodeAt(i);
