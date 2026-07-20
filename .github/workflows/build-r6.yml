@@ -1,0 +1,74 @@
+name: Build and Test SKYFIRE R6
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-r6.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore R6 build tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat build/payload/part-*.b64 > /tmp/r6-payload.b64
+          echo '2eec0ca5fbf9867fb82238c3b668079b7bd3a2bf651a4eb0c549f7ada67fef29  /tmp/r6-payload.b64' | sha256sum -c -
+          base64 --decode /tmp/r6-payload.b64 > /tmp/r6-payload.tar.gz
+          tar -xzf /tmp/r6-payload.tar.gz -C build
+          echo 'ed6fb6c6035b96d5715ba7d946f4f04079f5457340864eee648b544eb5764348  build/r6-enhancement.js' | sha256sum -c -
+          echo 'fd3dc5be8c63bd849e512ddcbf420704867a22f970647a9c606a90e5c9eeabcc  build/build-r6.py' | sha256sum -c -
+          echo '71794c0730d0d246660cc4de4eb7df94f808c27f969f34b95b8e53d763889a96  build/r6-smoke.js' | sha256sum -c -
+          node --check build/r6-enhancement.js
+          node --check build/r6-smoke.js
+          python -m py_compile build/build-r6.py
+
+      - name: Build integrity-checked R6 site
+        run: |
+          python build/build-r6.py
+          cp src/r6-source.html src/r6-source.pretty.html
+          npx --yes prettier@3.3.3 --write src/r6-source.pretty.html
+
+      - name: Install browser test runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.48.2
+          npx playwright install --with-deps chromium
+
+      - name: Run desktop and mobile gameplay QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p qa
+          python -m http.server 4173 --bind 127.0.0.1 > /tmp/skyfire-r6-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/index.html >/dev/null; then break; fi
+            sleep 1
+          done
+          SKYFIRE_URL=http://127.0.0.1:4173/index.html node build/r6-smoke.js
+
+      - name: Commit verified deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf node_modules package.json package-lock.json
+          git config user.name 'skyfire-build-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add index.html r6 src/r6-source.html src/r6-source.pretty.html qa/r6-smoke-result.json qa/r6-desktop.png qa/r6-mobile.png
+          if git diff --cached --quiet; then
+            echo 'No deployment changes'
+          else
+            git commit -m 'Build, test and deploy SKYFIRE Arsenal R6 [skip ci]'
+            git push
+          fi
